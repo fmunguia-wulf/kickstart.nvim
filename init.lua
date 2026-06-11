@@ -899,7 +899,7 @@ do
 
   -- Ensure basic parsers are installed
   local parsers = { 'bash', 'c', 'diff', 'html', 'lua', 'luadoc', 'markdown', 'markdown_inline', 'query', 'vim', 'vimdoc' }
-  if not vim.fn.hostname():match('nersc') then
+  if not vim.env.NERSC_HOST then
     require('nvim-treesitter').install(parsers)
   end 
 
