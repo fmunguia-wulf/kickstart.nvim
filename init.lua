@@ -899,9 +899,13 @@ do
 
   -- Ensure basic parsers are installed
   local parsers = { 'bash', 'c', 'diff', 'html', 'lua', 'luadoc', 'markdown', 'markdown_inline', 'query', 'vim', 'vimdoc' }
-  if not vim.fn.hostname():match('nersc') then
+  -- Gate on the tree-sitter CLI actually being usable, not a hostname list --
+  -- self-adapts to any cluster (old glibc, no CLI, etc.) without editing this
+  -- file again per-machine.
+  local ts_cli_ok = vim.fn.executable 'tree-sitter' == 1
+  if ts_cli_ok then
     require('nvim-treesitter').install(parsers)
-  end 
+  end
 
   ---@param buf integer
   ---@param language string
@@ -937,7 +941,7 @@ do
       if vim.tbl_contains(installed_parsers, language) then
         -- Enable the parser if it is already installed
         treesitter_try_attach(buf, language)
-      elseif vim.tbl_contains(available_parsers, language) then
+      elseif ts_cli_ok and vim.tbl_contains(available_parsers, language) then
         -- If a parser is available in `nvim-treesitter`, auto-install it and enable it after the installation is done
         require('nvim-treesitter').install(language):await(function() treesitter_try_attach(buf, language) end)
       else
