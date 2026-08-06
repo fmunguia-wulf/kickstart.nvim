@@ -28,8 +28,7 @@ What is Kickstart?
     The goal is that you can read every line of code, top-to-bottom, understand
     what your configuration is doing, and modify it to suit your needs.
 
-    Once you've done that, you can start exploring, configuring and tinkering to
-    make Neovim your own! That might mean leaving Kickstart just the way it is for a while
+    Once you've done that, you can start exploring, configuring and tinkering to make Neovim your own! That might mean leaving Kickstart just the way it is for a while
     or immediately breaking it into modular pieces. It's up to you!
 
     If you don't know anything about Lua, I recommend taking some time to read through
@@ -110,7 +109,7 @@ do
   vim.o.number = true
   -- You can also add relative line numbers, to help with jumping.
   --  Experiment for yourself to see if you like it!
-  -- vim.o.relativenumber = true
+  vim.o.relativenumber = true
 
   -- Enable mouse mode, can be useful for resizing splits for example!
   vim.o.mouse = 'a'
@@ -391,11 +390,6 @@ do
     },
   }
 
-  -- Load the colorscheme here.
-  -- Like many other themes, this one has different styles, and you could load
-  -- any other, such as 'tokyonight-storm', 'tokyonight-moon', or 'tokyonight-day'.
-  vim.cmd.colorscheme 'tokyonight-night'
-
   -- Highlight todo, notes, etc in comments
   vim.pack.add { gh 'folke/todo-comments.nvim' }
   require('todo-comments').setup { signs = false }
@@ -403,6 +397,10 @@ do
   -- [[ mini.nvim ]]
   --  A collection of various small independent plugins/modules
   vim.pack.add { gh 'nvim-mini/mini.nvim' }
+
+  -- Load the colorscheme here, now that mini.nvim (which minicyan depends
+  -- on via mini.base16) is on the runtimepath.
+  vim.cmd.colorscheme 'minicyan'
 
   -- Better Around/Inside textobjects
   --
