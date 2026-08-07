@@ -899,8 +899,15 @@ do
   local parsers = { 'bash', 'c', 'diff', 'html', 'lua', 'luadoc', 'markdown', 'markdown_inline', 'query', 'vim', 'vimdoc' }
   -- Gate on the tree-sitter CLI actually being usable, not a hostname list --
   -- self-adapts to any cluster (old glibc, no CLI, etc.) without editing this
-  -- file again per-machine.
+  -- file again per-machine. `executable()` only checks the file exists and is
+  -- +x; it says nothing about whether it can actually run (e.g. a prebuilt
+  -- binary linked against a newer glibc than an HPC login node has), so we
+  -- also have to actually invoke it and check the exit code.
   local ts_cli_ok = vim.fn.executable 'tree-sitter' == 1
+  if ts_cli_ok then
+    vim.fn.system 'tree-sitter --version'
+    ts_cli_ok = vim.v.shell_error == 0
+  end
   if ts_cli_ok then
     require('nvim-treesitter').install(parsers)
   end
