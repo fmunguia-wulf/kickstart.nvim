@@ -97,8 +97,12 @@ do
   vim.g.mapleader = ' '
   vim.g.maplocalleader = ' '
 
-  -- Set to true if you have a Nerd Font installed and selected in the terminal
-  vim.g.have_nerd_font = true
+  -- Set to true if you have a Nerd Font installed and selected in the terminal.
+  -- NERSC ThinLinc's MATE Terminal can't render Nerd Font glyphs no matter
+  -- what's installed (see ~/dotfiles/.zshrc) -- detect it the same way, via
+  -- $SSH_CONNECTION's client IP landing in NERSC's own 128.55.0.0/16 block.
+  local ssh_client_ip = (os.getenv 'SSH_CONNECTION' or ''):match '^(%S+)' or ''
+  vim.g.have_nerd_font = not ssh_client_ip:match '^128%.55%.'
 
   -- [[ Setting options ]]
   --  See `:help vim.o`
