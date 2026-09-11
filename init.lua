@@ -133,6 +133,25 @@ do
   --  Schedule the setting after `UiEnter` because it can increase startup-time.
   --  Remove this option if you want your OS clipboard to remain independent.
   --  See `:help 'clipboard'`
+  --
+  -- NERSC login nodes (and ThinLinc's MATE session) have no xclip/xsel, so
+  -- Neovim has no system-clipboard provider there ("clipboard: No provider").
+  -- Fall back to OSC 52 -- it sends copied text as a terminal escape
+  -- sequence the LOCAL terminal (MATE Terminal, iTerm2, ...) captures into
+  -- its own clipboard, so nothing needs installing on the remote host.
+  if
+    vim.fn.has 'nvim-0.10' == 1
+    and vim.fn.executable 'xclip' == 0
+    and vim.fn.executable 'xsel' == 0
+    and vim.fn.executable 'wl-copy' == 0
+    and vim.fn.executable 'pbcopy' == 0
+  then
+    vim.g.clipboard = {
+      name = 'OSC 52',
+      copy = { ['+'] = require('vim.ui.clipboard.osc52').copy '+', ['*'] = require('vim.ui.clipboard.osc52').copy '*' },
+      paste = { ['+'] = require('vim.ui.clipboard.osc52').paste '+', ['*'] = require('vim.ui.clipboard.osc52').paste '*' },
+    }
+  end
   vim.schedule(function() vim.o.clipboard = 'unnamedplus' end)
 
   -- Enable break indent
